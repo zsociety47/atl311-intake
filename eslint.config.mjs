@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // CommonJS config — require() is intentional
+    "jest.config.js",
   ]),
 ]);
 

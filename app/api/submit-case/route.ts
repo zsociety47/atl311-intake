@@ -108,18 +108,23 @@ export async function POST(request: NextRequest) {
 
   const { residentName, residentEmail, address, isPublic, ownerOrTenant, category, description } = body
 
+  const requiresOwnerOrTenant = isPublic === false
+
   if (
     typeof residentName !== 'string' || !residentName.trim() ||
     typeof residentEmail !== 'string' || !residentEmail.trim() ||
     typeof address !== 'string' || !address.trim() ||
     typeof isPublic !== 'boolean' ||
-    typeof ownerOrTenant !== 'string' || !ownerOrTenant.trim() ||
     typeof category !== 'string' || !category.trim() ||
-    typeof description !== 'string' || !description.trim()
+    typeof description !== 'string' || !description.trim() ||
+    (requiresOwnerOrTenant && (typeof ownerOrTenant !== 'string' || !ownerOrTenant.trim()))
   ) {
     return Response.json({ error: 'All fields are required' }, { status: 400 })
   }
 
+  const effectiveOwnerOrTenant = requiresOwnerOrTenant
+    ? (ownerOrTenant as string)
+    : 'Public Property'
   const sanitizedDescription = sanitizeDescription(description)
 
   let routing: RoutingDecision
@@ -144,7 +149,7 @@ export async function POST(request: NextRequest) {
           residentEmail,
           address,
           isPublic,
-          ownerOrTenant,
+          ownerOrTenant: effectiveOwnerOrTenant,
           category,
           description,
           sanitizedDescription,

@@ -111,7 +111,9 @@ describe('POST /api/submit-case', () => {
   })
 
   it('missing required field — returns 400 with error message', async () => {
-    const { description: _omitted, ...bodyWithoutDescription } = VALID_BODY
+    const bodyWithoutDescription = Object.fromEntries(
+      Object.entries(VALID_BODY).filter(([k]) => k !== 'description'),
+    )
     const res = await POST(makeRequest(bodyWithoutDescription))
     const json = await res.json()
 
