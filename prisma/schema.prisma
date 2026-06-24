@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CaseStatus {
+  SUBMITTED
+  ROUTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  CLOSED
+}
+
+enum RoutingSource {
+  CLAUDE
+  MANUAL
+}
+
+model Case {
+  id                   String          @id @default(cuid())
+  publicId             String          @unique
+  residentName         String
+  residentEmail        String
+  address              String
+  isPublic             Boolean         @default(true)
+  ownerOrTenant        String
+  category             String
+  description          String
+  sanitizedDescription String
+  status               CaseStatus      @default(SUBMITTED)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  routings             Routing[]
+  statusHistory        StatusHistory[]
+
+  @@map("cases")
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Routing {
+  id               String        @id @default(cuid())
+  caseId           String
+  department       String
+  decisionSource   RoutingSource
+  confidence       Decimal?      @db.Decimal(5, 4)
+  reasoningSummary String?
+  createdAt        DateTime      @default(now())
+  case             Case          @relation(fields: [caseId], references: [id])
+
+  @@map("routings")
+  @@index([caseId])
+  @@index([decisionSource])
+  @@index([createdAt])
+}
+
+model StatusHistory {
+  id         String      @id @default(cuid())
+  caseId     String
+  fromStatus CaseStatus?
+  toStatus   CaseStatus
+  note       String?
+  createdAt  DateTime    @default(now())
+  case       Case        @relation(fields: [caseId], references: [id])
+
+  @@map("status_history")
+  @@index([caseId])
+  @@index([toStatus])
+  @@index([createdAt])
+}
