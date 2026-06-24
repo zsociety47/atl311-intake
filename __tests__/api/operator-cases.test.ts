@@ -16,6 +16,7 @@ jest.mock('@/lib/db', () => ({
 import { GET } from '@/app/api/operator/cases/route'
 import { POST as approve } from '@/app/api/operator/cases/[caseId]/approve/route'
 import { POST as override } from '@/app/api/operator/cases/[caseId]/override/route'
+import { POST as close } from '@/app/api/operator/cases/[caseId]/close/route'
 import { db } from '@/lib/db'
 
 // -------------------------------------------------------------------
@@ -267,5 +268,84 @@ describe('POST /api/operator/cases/[caseId]/override', () => {
 
     expect(res.status).toBe(500)
     expect(json.error).toBe('Failed to override case')
+  })
+})
+
+describe('POST /api/operator/cases/[caseId]/close', () => {
+  const VALID_BODY = { category: 'DUPLICATE', description: 'Already filed under ticket 7615EB.' }
+
+  it('updates Case.status to CLOSED and inserts one StatusHistory row', async () => {
+    mockFindUnique.mockResolvedValue(SAMPLE_CASE)
+    const mockTx = makeMockTx()
+    mockTransaction.mockImplementation(
+      async (callback: (tx: typeof mockTx) => Promise<void>) => callback(mockTx),
+    )
+
+    const res = await close(
+      makePostRequest('http://localhost/api/operator/cases/case-1/close', VALID_BODY),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(json.success).toBe(true)
+    expect(json.caseId).toBe('case-1')
+    expect(mockTx.case.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: 'CLOSED' }),
+      }),
+    )
+    expect(mockTx.statusHistory.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          toStatus: 'CLOSED',
+          note: JSON.stringify({ category: 'DUPLICATE', description: VALID_BODY.description }),
+        }),
+      }),
+    )
+  })
+
+  it('rejects missing description with 400', async () => {
+    const res = await close(
+      makePostRequest('http://localhost/api/operator/cases/case-1/close', {
+        category: 'DUPLICATE',
+        description: '',
+      }),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('Description is required')
+    expect(mockFindUnique).not.toHaveBeenCalled()
+  })
+
+  it('rejects invalid category with 400', async () => {
+    const res = await close(
+      makePostRequest('http://localhost/api/operator/cases/case-1/close', {
+        category: 'GARBAGE',
+        description: 'Some reason.',
+      }),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('Valid close category is required')
+    expect(mockFindUnique).not.toHaveBeenCalled()
+  })
+
+  it('returns 500 on database failure', async () => {
+    mockFindUnique.mockResolvedValue(SAMPLE_CASE)
+    mockTransaction.mockRejectedValue(new Error('Connection failed'))
+
+    const res = await close(
+      makePostRequest('http://localhost/api/operator/cases/case-1/close', VALID_BODY),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(500)
+    expect(json.error).toBe('Failed to close case')
   })
 })
