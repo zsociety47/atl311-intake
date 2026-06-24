@@ -1,0 +1,48 @@
+# ATL311 Civic Intake Platform — Cursor Rules
+
+## Tech Stack
+- Framework: Next.js 14 App Router (TypeScript)
+- Styling: Tailwind CSS
+- ORM: Prisma v7 with PrismaPg driver adapter
+- Database: PostgreSQL via Supabase
+- AI: Anthropic Claude API (claude-sonnet-4-6)
+- Auth: NextAuth.js
+- Email: Resend
+- Testing: Jest (unit), Supertest (integration), Playwright (E2E)
+
+## Code Style
+- TypeScript strict mode — never use 'any'
+- Functional components only — no class components
+- Async/await only — never callbacks or .then() chains
+- Named exports for components, default exports for pages
+- Error handling: try/catch on every async function, log with context
+- Database: always use DIRECT_URL (:5432) for migrations, never pooler (:6543)
+- Imports: use @/ alias for all internal imports
+- No magic numbers — extract to named constants
+
+## Testing (MANDATORY)
+- Unit tests: every API route, every helper function
+- Integration tests: form submit → Claude → database → dashboard
+- E2E tests: Playwright — resident submits, operator approves
+- Coverage threshold: 80% minimum — CI fails below this
+- Never ship untested code to production
+
+## Logging
+- Audit logs: store in database (immutable) — routing decisions, status changes, operator actions
+- Debug logs: Vercel logs only — Claude API calls, DB queries, errors
+- NEVER log: full resident description, raw Claude API response (PII)
+- Track Claude routing accuracy: log every decision + operator override for drift detection
+
+## Security
+- Never commit API keys — all secrets in .env.local
+- Rate limit all API endpoints
+- CAPTCHA on resident submission form
+- Sanitize all form inputs before storing
+- WCAG 2.1 AA compliance: semantic HTML, ARIA labels, keyboard navigation, color contrast 4.5:1
+- Data residency: US-East region only
+
+## Database
+- Migrations: DIRECT_URL (:5432) only, never pooler
+- Routing and StatusHistory tables are IMMUTABLE — never update, only insert
+- Always add indexes on foreign keys and frequently queried fields
+- Use SELECT FOR UPDATE on capacity checks to prevent race conditions
