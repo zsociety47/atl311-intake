@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum IntakeStatus {
+  SUBMITTED
+  ROUTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  CLOSED
+}
+
+enum IntakePriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum RoutingDecisionSource {
+  CLAUDE
+  OPERATOR_OVERRIDE
+  MANUAL
+}
+
+enum OperatorRole {
+  OPERATOR
+  SUPERVISOR
+  ADMIN
+}
+
+enum AuditAction {
+  INTAKE_CREATED
+  ROUTING_DECIDED
+  ROUTING_OVERRIDDEN
+  STATUS_CHANGED
+  OPERATOR_ACTION
+}
+
+model Resident {
+  id           String         @id @default(cuid())
+  email        String?
+  phone        String?
+  firstName    String?
+  lastName     String?
+  street       String?
+  city         String?
+  state        String?
+  postalCode   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  intakeCases  IntakeCase[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model ServiceDepartment {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  slug        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  intakes     IntakeCase[]
+  operators   Operator[]
+  routings    Routing[]
+
+  @@index([isActive])
+}
+
+model Operator {
+  id            String             @id @default(cuid())
+  email         String             @unique
+  name          String
+  role          OperatorRole        @default(OPERATOR)
+  departmentId  String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  department    ServiceDepartment?  @relation(fields: [departmentId], references: [id])
+  assignedCases IntakeCase[]
+  overrides     Routing[]           @relation("RoutingOverrideOperator")
+  statusChanges StatusHistory[]
+  auditLogs     AuditLog[]
+
+  @@index([departmentId])
+  @@index([role])
+}
+
+model IntakeCase {
+  id                   String             @id @default(cuid())
+  publicId             String             @unique
+  residentId           String?
+  departmentId         String?
+  assignedOperatorId   String?
+  status               IntakeStatus       @default(SUBMITTED)
+  priority             IntakePriority     @default(NORMAL)
+  category             String?
+  description          String
+  sanitizedDescription String
+  location             String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  resident             Resident?          @relation(fields: [residentId], references: [id])
+  department           ServiceDepartment? @relation(fields: [departmentId], references: [id])
+  assignedOperator     Operator?          @relation(fields: [assignedOperatorId], references: [id])
+  routings             Routing[]
+  statusHistory        StatusHistory[]
+  auditLogs            AuditLog[]
+
+  @@index([residentId])
+  @@index([departmentId])
+  @@index([assignedOperatorId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+model Routing {
+  id                   String                 @id @default(cuid())
+  intakeCaseId         String
+  departmentId         String
+  decisionSource       RoutingDecisionSource
+  confidence           Decimal?               @db.Decimal(5, 4)
+  reasoningSummary     String?
+  overrideOperatorId   String?
+  overrideReason       String?
+  createdAt            DateTime               @default(now())
+  intakeCase           IntakeCase             @relation(fields: [intakeCaseId], references: [id])
+  department           ServiceDepartment      @relation(fields: [departmentId], references: [id])
+  overrideOperator     Operator?              @relation("RoutingOverrideOperator", fields: [overrideOperatorId], references: [id])
+
+  @@index([intakeCaseId])
+  @@index([departmentId])
+  @@index([overrideOperatorId])
+  @@index([decisionSource])
+  @@index([createdAt])
+}
+
+model StatusHistory {
+  id             String       @id @default(cuid())
+  intakeCaseId   String
+  fromStatus     IntakeStatus?
+  toStatus       IntakeStatus
+  changedById    String?
+  note           String?
+  createdAt      DateTime     @default(now())
+  intakeCase     IntakeCase   @relation(fields: [intakeCaseId], references: [id])
+  changedBy      Operator?    @relation(fields: [changedById], references: [id])
+
+  @@index([intakeCaseId])
+  @@index([changedById])
+  @@index([toStatus])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id             String       @id @default(cuid())
+  intakeCaseId   String?
+  operatorId     String?
+  action         AuditAction
+  context        Json
+  createdAt      DateTime     @default(now())
+  intakeCase     IntakeCase?  @relation(fields: [intakeCaseId], references: [id])
+  operator       Operator?    @relation(fields: [operatorId], references: [id])
+
+  @@index([intakeCaseId])
+  @@index([operatorId])
+  @@index([action])
+  @@index([createdAt])
+}
