@@ -91,7 +91,11 @@ async function routeWithClaude(category: string, sanitizedDescription: string): 
     throw new Error('Claude returned no routing decision')
   }
 
-  return toolUse.input as RoutingDecision
+  const decision = toolUse.input as RoutingDecision
+  if (!(DEPARTMENTS as ReadonlyArray<string>).includes(decision.department)) {
+    decision.department = 'OTHER'
+  }
+  return decision
 }
 
 export async function POST(request: NextRequest) {
