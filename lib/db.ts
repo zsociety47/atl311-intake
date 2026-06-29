@@ -5,10 +5,8 @@ import { Pool } from 'pg'
 const globalForPrisma = globalThis as unknown as { db: PrismaClient | undefined }
 
 function createClient(): PrismaClient {
-  const url = process.env.DATABASE_URL
-  console.log('DATABASE_URL prefix:', url?.substring(0, 50))
   const pool = new Pool({
-    connectionString: url,
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
   })
   const adapter = new PrismaPg(pool)
