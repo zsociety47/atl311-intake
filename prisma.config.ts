@@ -5,6 +5,7 @@ config()
 
 export default defineConfig({
   datasource: {
-    url: process.env.DATABASE_URL,
+    // Migrations use the direct connection (port 5432) — never the pooler
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
   },
 })
