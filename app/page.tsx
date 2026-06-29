@@ -9,6 +9,7 @@ type Step = 1 | 2 | 3 | 4
 type FormState = {
   residentName: string
   residentEmail: string
+  residentPhone: string
   address: string
   isPublic: boolean
   ownerOrTenant: string
@@ -52,9 +53,11 @@ function validateStep(step: Step, form: FormState): FieldErrors {
 
   if (step === 1) {
     if (!form.residentName.trim()) errors.residentName = 'Full name is required'
-    if (!form.residentEmail.trim()) {
-      errors.residentEmail = 'Email address is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.residentEmail)) {
+    const hasEmail = form.residentEmail.trim().length > 0
+    const hasPhone = form.residentPhone.trim().length > 0
+    if (!hasEmail && !hasPhone) {
+      errors.residentEmail = 'Provide at least an email address or phone number'
+    } else if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.residentEmail)) {
       errors.residentEmail = 'Enter a valid email address'
     }
   }
@@ -161,6 +164,7 @@ export default function Home() {
   const [form, setForm] = useState<FormState>({
     residentName: '',
     residentEmail: '',
+    residentPhone: '',
     address: '',
     isPublic: true,
     ownerOrTenant: '',
@@ -201,7 +205,8 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           residentName: form.residentName,
-          residentEmail: form.residentEmail,
+          residentEmail: form.residentEmail || undefined,
+          residentPhone: form.residentPhone || undefined,
           address: form.address,
           isPublic: form.isPublic,
           ownerOrTenant: form.isPublic ? '' : form.ownerOrTenant,
@@ -318,6 +323,21 @@ export default function Home() {
                 className={inputCls('residentEmail')}
               />
               {errors.residentEmail && <p className={errorCls}>{errors.residentEmail}</p>}
+            </div>
+            <div>
+              <label htmlFor="residentPhone" className={labelCls}>
+                Phone Number{' '}
+                <span className="text-xs font-normal text-[#9A9A9A]">(optional if email provided)</span>
+              </label>
+              <input
+                id="residentPhone"
+                type="tel"
+                autoComplete="tel"
+                placeholder="404-555-1234"
+                value={form.residentPhone}
+                onChange={(e) => update('residentPhone', e.target.value)}
+                className={inputCls('residentPhone')}
+              />
             </div>
           </div>
         )

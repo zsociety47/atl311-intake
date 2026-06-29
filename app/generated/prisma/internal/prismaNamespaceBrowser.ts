@@ -77,6 +77,7 @@ export const CaseScalarFieldEnum = {
   publicId: 'publicId',
   residentName: 'residentName',
   residentEmail: 'residentEmail',
+  phone: 'phone',
   address: 'address',
   isPublic: 'isPublic',
   ownerOrTenant: 'ownerOrTenant',

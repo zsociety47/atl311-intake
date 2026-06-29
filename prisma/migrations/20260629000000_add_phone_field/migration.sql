@@ -1,0 +1,2 @@
+ALTER TABLE "cases" ADD COLUMN "phone" TEXT;
+ALTER TABLE "cases" ALTER COLUMN "residentEmail" DROP NOT NULL;

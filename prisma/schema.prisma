@@ -25,7 +25,8 @@ model Case {
   id                   String          @id @default(cuid())
   publicId             String          @unique
   residentName         String
-  residentEmail        String
+  residentEmail        String?
+  phone                String?
   address              String
   isPublic             Boolean         @default(true)
   ownerOrTenant        String

@@ -29,6 +29,7 @@ export type CaseMinAggregateOutputType = {
   publicId: string | null
   residentName: string | null
   residentEmail: string | null
+  phone: string | null
   address: string | null
   isPublic: boolean | null
   ownerOrTenant: string | null
@@ -45,6 +46,7 @@ export type CaseMaxAggregateOutputType = {
   publicId: string | null
   residentName: string | null
   residentEmail: string | null
+  phone: string | null
   address: string | null
   isPublic: boolean | null
   ownerOrTenant: string | null
@@ -61,6 +63,7 @@ export type CaseCountAggregateOutputType = {
   publicId: number
   residentName: number
   residentEmail: number
+  phone: number
   address: number
   isPublic: number
   ownerOrTenant: number
@@ -79,6 +82,7 @@ export type CaseMinAggregateInputType = {
   publicId?: true
   residentName?: true
   residentEmail?: true
+  phone?: true
   address?: true
   isPublic?: true
   ownerOrTenant?: true
@@ -95,6 +99,7 @@ export type CaseMaxAggregateInputType = {
   publicId?: true
   residentName?: true
   residentEmail?: true
+  phone?: true
   address?: true
   isPublic?: true
   ownerOrTenant?: true
@@ -111,6 +116,7 @@ export type CaseCountAggregateInputType = {
   publicId?: true
   residentName?: true
   residentEmail?: true
+  phone?: true
   address?: true
   isPublic?: true
   ownerOrTenant?: true
@@ -199,7 +205,8 @@ export type CaseGroupByOutputType = {
   id: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail: string | null
+  phone: string | null
   address: string
   isPublic: boolean
   ownerOrTenant: string
@@ -236,7 +243,8 @@ export type CaseWhereInput = {
   id?: Prisma.StringFilter<"Case"> | string
   publicId?: Prisma.StringFilter<"Case"> | string
   residentName?: Prisma.StringFilter<"Case"> | string
-  residentEmail?: Prisma.StringFilter<"Case"> | string
+  residentEmail?: Prisma.StringNullableFilter<"Case"> | string | null
+  phone?: Prisma.StringNullableFilter<"Case"> | string | null
   address?: Prisma.StringFilter<"Case"> | string
   isPublic?: Prisma.BoolFilter<"Case"> | boolean
   ownerOrTenant?: Prisma.StringFilter<"Case"> | string
@@ -254,7 +262,8 @@ export type CaseOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   publicId?: Prisma.SortOrder
   residentName?: Prisma.SortOrder
-  residentEmail?: Prisma.SortOrder
+  residentEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   ownerOrTenant?: Prisma.SortOrder
@@ -275,7 +284,8 @@ export type CaseWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CaseWhereInput[]
   NOT?: Prisma.CaseWhereInput | Prisma.CaseWhereInput[]
   residentName?: Prisma.StringFilter<"Case"> | string
-  residentEmail?: Prisma.StringFilter<"Case"> | string
+  residentEmail?: Prisma.StringNullableFilter<"Case"> | string | null
+  phone?: Prisma.StringNullableFilter<"Case"> | string | null
   address?: Prisma.StringFilter<"Case"> | string
   isPublic?: Prisma.BoolFilter<"Case"> | boolean
   ownerOrTenant?: Prisma.StringFilter<"Case"> | string
@@ -293,7 +303,8 @@ export type CaseOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   publicId?: Prisma.SortOrder
   residentName?: Prisma.SortOrder
-  residentEmail?: Prisma.SortOrder
+  residentEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   ownerOrTenant?: Prisma.SortOrder
@@ -315,7 +326,8 @@ export type CaseScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Case"> | string
   publicId?: Prisma.StringWithAggregatesFilter<"Case"> | string
   residentName?: Prisma.StringWithAggregatesFilter<"Case"> | string
-  residentEmail?: Prisma.StringWithAggregatesFilter<"Case"> | string
+  residentEmail?: Prisma.StringNullableWithAggregatesFilter<"Case"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Case"> | string | null
   address?: Prisma.StringWithAggregatesFilter<"Case"> | string
   isPublic?: Prisma.BoolWithAggregatesFilter<"Case"> | boolean
   ownerOrTenant?: Prisma.StringWithAggregatesFilter<"Case"> | string
@@ -331,7 +343,8 @@ export type CaseCreateInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -349,7 +362,8 @@ export type CaseUncheckedCreateInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -367,7 +381,8 @@ export type CaseUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -385,7 +400,8 @@ export type CaseUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -403,7 +419,8 @@ export type CaseCreateManyInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -419,7 +436,8 @@ export type CaseUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -435,7 +453,8 @@ export type CaseUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -452,6 +471,7 @@ export type CaseCountOrderByAggregateInput = {
   publicId?: Prisma.SortOrder
   residentName?: Prisma.SortOrder
   residentEmail?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   ownerOrTenant?: Prisma.SortOrder
@@ -468,6 +488,7 @@ export type CaseMaxOrderByAggregateInput = {
   publicId?: Prisma.SortOrder
   residentName?: Prisma.SortOrder
   residentEmail?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   ownerOrTenant?: Prisma.SortOrder
@@ -484,6 +505,7 @@ export type CaseMinOrderByAggregateInput = {
   publicId?: Prisma.SortOrder
   residentName?: Prisma.SortOrder
   residentEmail?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   ownerOrTenant?: Prisma.SortOrder
@@ -502,6 +524,10 @@ export type CaseScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type BoolFieldUpdateOperationsInput = {
@@ -548,7 +574,8 @@ export type CaseCreateWithoutRoutingsInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -565,7 +592,8 @@ export type CaseUncheckedCreateWithoutRoutingsInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -598,7 +626,8 @@ export type CaseUpdateWithoutRoutingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -615,7 +644,8 @@ export type CaseUncheckedUpdateWithoutRoutingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -632,7 +662,8 @@ export type CaseCreateWithoutStatusHistoryInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -649,7 +680,8 @@ export type CaseUncheckedCreateWithoutStatusHistoryInput = {
   id?: string
   publicId: string
   residentName: string
-  residentEmail: string
+  residentEmail?: string | null
+  phone?: string | null
   address: string
   isPublic?: boolean
   ownerOrTenant: string
@@ -682,7 +714,8 @@ export type CaseUpdateWithoutStatusHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -699,7 +732,8 @@ export type CaseUncheckedUpdateWithoutStatusHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   residentName?: Prisma.StringFieldUpdateOperationsInput | string
-  residentEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
@@ -757,6 +791,7 @@ export type CaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   publicId?: boolean
   residentName?: boolean
   residentEmail?: boolean
+  phone?: boolean
   address?: boolean
   isPublic?: boolean
   ownerOrTenant?: boolean
@@ -776,6 +811,7 @@ export type CaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   publicId?: boolean
   residentName?: boolean
   residentEmail?: boolean
+  phone?: boolean
   address?: boolean
   isPublic?: boolean
   ownerOrTenant?: boolean
@@ -792,6 +828,7 @@ export type CaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   publicId?: boolean
   residentName?: boolean
   residentEmail?: boolean
+  phone?: boolean
   address?: boolean
   isPublic?: boolean
   ownerOrTenant?: boolean
@@ -808,6 +845,7 @@ export type CaseSelectScalar = {
   publicId?: boolean
   residentName?: boolean
   residentEmail?: boolean
+  phone?: boolean
   address?: boolean
   isPublic?: boolean
   ownerOrTenant?: boolean
@@ -819,7 +857,7 @@ export type CaseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "residentName" | "residentEmail" | "address" | "isPublic" | "ownerOrTenant" | "category" | "description" | "sanitizedDescription" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["case"]>
+export type CaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "residentName" | "residentEmail" | "phone" | "address" | "isPublic" | "ownerOrTenant" | "category" | "description" | "sanitizedDescription" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["case"]>
 export type CaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   routings?: boolean | Prisma.Case$routingsArgs<ExtArgs>
   statusHistory?: boolean | Prisma.Case$statusHistoryArgs<ExtArgs>
@@ -838,7 +876,8 @@ export type $CasePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     publicId: string
     residentName: string
-    residentEmail: string
+    residentEmail: string | null
+    phone: string | null
     address: string
     isPublic: boolean
     ownerOrTenant: string
@@ -1277,6 +1316,7 @@ export interface CaseFieldRefs {
   readonly publicId: Prisma.FieldRef<"Case", 'String'>
   readonly residentName: Prisma.FieldRef<"Case", 'String'>
   readonly residentEmail: Prisma.FieldRef<"Case", 'String'>
+  readonly phone: Prisma.FieldRef<"Case", 'String'>
   readonly address: Prisma.FieldRef<"Case", 'String'>
   readonly isPublic: Prisma.FieldRef<"Case", 'Boolean'>
   readonly ownerOrTenant: Prisma.FieldRef<"Case", 'String'>

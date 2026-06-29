@@ -106,13 +106,15 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { residentName, residentEmail, address, isPublic, ownerOrTenant, category, description } = body
+  const { residentName, residentEmail, residentPhone, address, isPublic, ownerOrTenant, category, description } = body
 
   const requiresOwnerOrTenant = isPublic === false
+  const hasEmail = typeof residentEmail === 'string' && residentEmail.trim().length > 0
+  const hasPhone = typeof residentPhone === 'string' && residentPhone.trim().length > 0
 
   if (
     typeof residentName !== 'string' || !residentName.trim() ||
-    typeof residentEmail !== 'string' || !residentEmail.trim() ||
+    (!hasEmail && !hasPhone) ||
     typeof address !== 'string' || !address.trim() ||
     typeof isPublic !== 'boolean' ||
     typeof category !== 'string' || !category.trim() ||
@@ -146,7 +148,8 @@ export async function POST(request: NextRequest) {
           id,
           publicId: ticketId,
           residentName,
-          residentEmail,
+          residentEmail: hasEmail ? (residentEmail as string).trim() : undefined,
+          phone: hasPhone ? (residentPhone as string).trim() : undefined,
           address,
           isPublic,
           ownerOrTenant: effectiveOwnerOrTenant,

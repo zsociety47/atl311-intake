@@ -166,4 +166,36 @@ describe('POST /api/submit-case', () => {
     expect(json.error).toBe('Routing service unavailable')
     expect(mockTransaction).not.toHaveBeenCalled()
   })
+
+  it('phone-only submission — succeeds and stores phone without email', async () => {
+    mockCreate.mockResolvedValue(makeClaudeResponse('DOT'))
+
+    const mockTx = makeMockTx()
+    mockTransaction.mockImplementation(
+      async (callback: (tx: typeof mockTx) => Promise<void>) => callback(mockTx),
+    )
+
+    const body = { ...VALID_BODY, residentPhone: '404-555-1234' }
+    delete (body as Record<string, unknown>).residentEmail
+
+    const res = await POST(makeRequest(body))
+    expect(res.status).toBe(200)
+    expect(mockTx.case.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ phone: '404-555-1234' }),
+      }),
+    )
+  })
+
+  it('missing both email and phone — returns 400 and does not call Claude', async () => {
+    const body = { ...VALID_BODY }
+    delete (body as Record<string, unknown>).residentEmail
+
+    const res = await POST(makeRequest(body))
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('All fields are required')
+    expect(mockCreate).not.toHaveBeenCalled()
+  })
 })
