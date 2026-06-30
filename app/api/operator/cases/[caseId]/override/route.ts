@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { CaseStatus, RoutingSource } from '@/app/generated/prisma/enums'
+import { getOperatorSession } from '@/lib/auth'
 
 const VALID_DEPARTMENTS = [
   'PARKS',
@@ -15,6 +16,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ caseId: string }> },
 ) {
+  if (!(await getOperatorSession())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { caseId } = await params
 
   let body: Record<string, unknown>

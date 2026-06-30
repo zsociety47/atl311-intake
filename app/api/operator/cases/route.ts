@@ -1,7 +1,12 @@
 import { db } from '@/lib/db'
 import { CaseStatus } from '@/app/generated/prisma/enums'
+import { getOperatorSession } from '@/lib/auth'
 
 export async function GET() {
+  if (!(await getOperatorSession())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     const cases = await db.case.findMany({
       orderBy: { createdAt: 'desc' },

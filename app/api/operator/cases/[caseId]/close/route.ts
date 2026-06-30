@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { CaseStatus } from '@/app/generated/prisma/enums'
 import { sendCaseClosedNotification } from '@/lib/email'
+import { getOperatorSession } from '@/lib/auth'
 
 const CLOSE_CATEGORIES = [
   'UNINTELLIGIBLE',
@@ -16,6 +17,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ caseId: string }> },
 ) {
+  if (!(await getOperatorSession())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { caseId } = await params
 
   let body: Record<string, unknown>
