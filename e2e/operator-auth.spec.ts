@@ -14,7 +14,7 @@ test.describe('Operator authentication', () => {
     await page.fill('#email', 'wrong@example.com')
     await page.fill('#password', 'wrongpassword')
     await page.click('button:has-text("Sign In")')
-    await expect(page.getByRole('alert')).toContainText('Invalid credentials')
+    await expect(page.getByRole('alert').filter({ hasText: 'Invalid credentials' })).toBeVisible()
   })
 
   test('correct credentials redirect to operator dashboard', async ({ page }) => {

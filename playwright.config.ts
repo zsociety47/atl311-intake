@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
+import { config } from 'dotenv'
+
+// Load .env so OPERATOR_EMAIL / OPERATOR_PASSWORD are available to tests
+// without requiring the caller to manually source the file.
+config({ path: '.env' })
 
 export default defineConfig({
   testDir: './e2e',
