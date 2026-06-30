@@ -29,19 +29,18 @@ test.describe('Operator dashboard actions', () => {
     // Wait for dashboard data to load
     await expect(page.getByText('Loading cases…')).not.toBeVisible({ timeout: 15_000 })
 
-    // Find the first "Approve Routing" button — only shown for ROUTED cases
-    const approveBtn = page.getByRole('button', { name: 'Approve Routing' }).first()
+    const approveBtns = page.getByRole('button', { name: 'Approve Routing' })
+    const initialCount = await approveBtns.count()
 
     // If no ROUTED cases exist the test is skipped gracefully
-    const hasApproveBtn = await approveBtn.isVisible()
-    if (!hasApproveBtn) {
+    if (initialCount === 0) {
       test.skip()
       return
     }
 
-    await approveBtn.click()
+    await approveBtns.first().click()
 
-    // Button disappears or case status changes — dashboard refreshes automatically
-    await expect(approveBtn).not.toBeVisible({ timeout: 10_000 })
+    // After the dashboard refreshes, one fewer "Approve Routing" button should be visible
+    await expect(approveBtns).toHaveCount(initialCount - 1, { timeout: 10_000 })
   })
 })
