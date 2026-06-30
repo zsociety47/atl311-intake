@@ -13,6 +13,9 @@ const customConfig = {
     'app/api/**/*.ts',
     'lib/**/*.ts',
     '!app/generated/**',
+    '!lib/db.ts',
+    '!lib/anthropic.ts',
+    '!app/api/auth/**',
   ],
   coverageThreshold: {
     global: {

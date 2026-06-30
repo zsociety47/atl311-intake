@@ -27,6 +27,7 @@ import { POST as approve } from '@/app/api/operator/cases/[caseId]/approve/route
 import { POST as override } from '@/app/api/operator/cases/[caseId]/override/route'
 import { POST as close } from '@/app/api/operator/cases/[caseId]/close/route'
 import { db } from '@/lib/db'
+import { getOperatorSession } from '@/lib/auth'
 
 // -------------------------------------------------------------------
 // Helpers
@@ -35,6 +36,7 @@ import { db } from '@/lib/db'
 const mockFindMany = db.case.findMany as jest.Mock
 const mockFindUnique = db.case.findUnique as jest.Mock
 const mockTransaction = db.$transaction as jest.Mock
+const mockGetOperatorSession = getOperatorSession as jest.Mock
 
 const SAMPLE_ROUTING = {
   id: 'routing-1',
@@ -98,6 +100,7 @@ function makeMockTx() {
 
 beforeEach(() => {
   jest.clearAllMocks()
+  mockGetOperatorSession.mockResolvedValue({ user: { role: 'operator' } })
 })
 
 // -------------------------------------------------------------------
@@ -105,6 +108,17 @@ beforeEach(() => {
 // -------------------------------------------------------------------
 
 describe('GET /api/operator/cases', () => {
+  it('returns 401 when unauthenticated', async () => {
+    mockGetOperatorSession.mockResolvedValue(null)
+
+    const res = await GET(makeGetRequest())
+    const json = await res.json()
+
+    expect(res.status).toBe(401)
+    expect(json.error).toBe('Unauthorized')
+    expect(mockFindMany).not.toHaveBeenCalled()
+  })
+
   it('returns cases with latest routing and metrics', async () => {
     mockFindMany.mockResolvedValue([SAMPLE_CASE])
 
@@ -176,6 +190,25 @@ describe('POST /api/operator/cases/[caseId]/approve', () => {
       }),
     )
     expect(mockTx.statusHistory.create).toHaveBeenCalledTimes(1)
+    expect(mockTx.auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ action: 'APPROVE', caseId: 'case-1' }),
+      }),
+    )
+  })
+
+  it('returns 422 when approving a closed case', async () => {
+    mockFindUnique.mockResolvedValue({ ...SAMPLE_CASE, status: 'CLOSED' })
+
+    const res = await approve(
+      makePostRequest('http://localhost/api/operator/cases/case-1/approve'),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(422)
+    expect(json.error).toContain('CLOSED')
+    expect(mockTransaction).not.toHaveBeenCalled()
   })
 
   it('returns 404 for unknown case', async () => {
@@ -237,6 +270,25 @@ describe('POST /api/operator/cases/[caseId]/override', () => {
       }),
     )
     expect(mockTx.statusHistory.create).toHaveBeenCalledTimes(1)
+    expect(mockTx.auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ action: 'OVERRIDE', caseId: 'case-1' }),
+      }),
+    )
+  })
+
+  it('returns 422 when overriding an approved case', async () => {
+    mockFindUnique.mockResolvedValue({ ...SAMPLE_CASE, status: 'APPROVED' })
+
+    const res = await override(
+      makePostRequest('http://localhost/api/operator/cases/case-1/override', VALID_BODY),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(422)
+    expect(json.error).toContain('APPROVED')
+    expect(mockTransaction).not.toHaveBeenCalled()
   })
 
   it('rejects an invalid department with 400', async () => {
@@ -315,6 +367,25 @@ describe('POST /api/operator/cases/[caseId]/close', () => {
         }),
       }),
     )
+    expect(mockTx.auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ action: 'CLOSE', caseId: 'case-1' }),
+      }),
+    )
+  })
+
+  it('returns 422 when closing an already closed case', async () => {
+    mockFindUnique.mockResolvedValue({ ...SAMPLE_CASE, status: 'CLOSED' })
+
+    const res = await close(
+      makePostRequest('http://localhost/api/operator/cases/case-1/close', VALID_BODY),
+      makeParams('case-1'),
+    )
+    const json = await res.json()
+
+    expect(res.status).toBe(422)
+    expect(json.error).toBe('Case is already closed')
+    expect(mockTransaction).not.toHaveBeenCalled()
   })
 
   it('rejects missing description with 400', async () => {

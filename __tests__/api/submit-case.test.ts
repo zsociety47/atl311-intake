@@ -26,6 +26,7 @@ jest.mock('@/lib/email', () => ({
 import { POST } from '@/app/api/submit-case/route'
 import { db } from '@/lib/db'
 import { anthropic } from '@/lib/anthropic'
+import { Prisma } from '@/app/generated/prisma/client'
 
 // -------------------------------------------------------------------
 // Helpers
@@ -126,6 +127,24 @@ describe('POST /api/submit-case', () => {
     expect(mockCreate).not.toHaveBeenCalled()
   })
 
+  it('invalid category — returns 400 and does not call Claude', async () => {
+    const res = await POST(makeRequest({ ...VALID_BODY, category: 'GARBAGE' }))
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('All fields are required')
+    expect(mockCreate).not.toHaveBeenCalled()
+  })
+
+  it('description too short — returns 400 and does not call Claude', async () => {
+    const res = await POST(makeRequest({ ...VALID_BODY, description: 'Too short' }))
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('All fields are required')
+    expect(mockCreate).not.toHaveBeenCalled()
+  })
+
   it('Claude returns unrecognized department — defaults to OTHER', async () => {
     mockCreate.mockResolvedValue(makeClaudeResponse('GARBAGE_DEPT', 40))
 
@@ -156,6 +175,29 @@ describe('POST /api/submit-case', () => {
     expect(res.status).toBe(500)
     expect(json.error).toBe('Failed to save case')
     expect(typeof json.caseId).toBe('undefined')
+  })
+
+  it('ticketId collision — retries and succeeds on second attempt', async () => {
+    mockCreate.mockResolvedValue(makeClaudeResponse('DOT'))
+
+    const collisionError = new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+      code: 'P2002',
+      clientVersion: '7.8.0',
+    })
+
+    const mockTx = makeMockTx()
+    mockTransaction
+      .mockRejectedValueOnce(collisionError)
+      .mockImplementation(async (callback: (tx: typeof mockTx) => Promise<void>) =>
+        callback(mockTx),
+      )
+
+    const res = await POST(makeRequest(VALID_BODY))
+    const json = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(json.ticketId).toHaveLength(6)
+    expect(mockTransaction).toHaveBeenCalledTimes(2)
   })
 
   it('Claude API throws — returns 503 routing service unavailable', async () => {
