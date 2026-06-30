@@ -264,6 +264,12 @@ export default function Home() {
                   {confirmation.ticketId}
                 </p>
               </div>
+              <a
+                href={`/track?id=${confirmation.ticketId}`}
+                className="inline-block mb-3 text-sm font-semibold text-[#E8642F] hover:underline focus:outline-none focus:ring-2 focus:ring-[#E8642F] focus:ring-offset-2 rounded"
+              >
+                Track your request status →
+              </a>
               <p className="text-xs text-[#9A9A9A]">
                 Save this ticket ID to track your request status.
               </p>
