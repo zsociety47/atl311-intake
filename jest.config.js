@@ -15,7 +15,9 @@ const customConfig = {
     '!app/generated/**',
     '!lib/db.ts',
     '!lib/anthropic.ts',
+    '!lib/rate-limit.ts',
     '!app/api/auth/**',
+    '!middleware.ts',
   ],
   coverageThreshold: {
     global: {

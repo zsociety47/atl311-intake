@@ -3,6 +3,11 @@
  */
 import { NextRequest } from 'next/server'
 
+jest.mock('@/lib/rate-limit', () => ({
+  checkRateLimit: jest.fn().mockResolvedValue({ allowed: true }),
+  rateLimitResponse: jest.fn(),
+}))
+
 jest.mock('@/lib/db', () => ({
   db: {
     case: {
@@ -13,8 +18,11 @@ jest.mock('@/lib/db', () => ({
 
 import { GET } from '@/app/api/track/[ticketId]/route'
 import { db } from '@/lib/db'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const mockFindUnique = db.case.findUnique as jest.Mock
+const mockCheckRateLimit = checkRateLimit as jest.Mock
+const mockRateLimitResponse = rateLimitResponse as jest.Mock
 
 const SAMPLE_CASE = {
   publicId: 'ABCDEF',
@@ -58,9 +66,22 @@ function makeParams(ticketId: string): { params: Promise<{ ticketId: string }> }
 
 beforeEach(() => {
   jest.clearAllMocks()
+  mockCheckRateLimit.mockResolvedValue({ allowed: true })
 })
 
 describe('GET /api/track/[ticketId]', () => {
+  it('returns 429 when rate limited', async () => {
+    mockCheckRateLimit.mockResolvedValue({ allowed: false, retryAfterSeconds: 30 })
+    mockRateLimitResponse.mockReturnValue(
+      Response.json({ error: 'Too many requests' }, { status: 429 }),
+    )
+
+    const res = await GET(makeRequest('ABCDEF'), makeParams('ABCDEF'))
+
+    expect(res.status).toBe(429)
+    expect(mockFindUnique).not.toHaveBeenCalled()
+  })
+
   it('returns case details for a valid ticket ID', async () => {
     mockFindUnique.mockResolvedValue(SAMPLE_CASE)
 

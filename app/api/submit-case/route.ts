@@ -4,6 +4,8 @@ import { anthropic } from '@/lib/anthropic'
 import { CaseStatus, RoutingSource } from '@/app/generated/prisma/enums'
 import { Prisma } from '@/app/generated/prisma/client'
 import { sendSubmissionConfirmation } from '@/lib/email'
+import { checkRateLimit, getClientIp, rateLimitResponse } from '@/lib/rate-limit'
+import { verifyCaptcha, isCaptchaRequired } from '@/lib/captcha'
 
 const DEPARTMENTS = [
   'PARKS',
@@ -102,7 +104,23 @@ async function routeWithClaude(category: string, sanitizedDescription: string): 
 
 const MAX_TICKET_RETRIES = 3
 
+const MAX_LENGTH = {
+  residentName: 200,
+  residentEmail: 254,
+  residentPhone: 30,
+  address: 500,
+  ownerOrTenant: 50,
+  description: 5000,
+} as const
+
+function exceedsMaxLength(value: string, max: number): boolean {
+  return value.trim().length > max
+}
+
 export async function POST(request: NextRequest) {
+  const rateCheck = await checkRateLimit(request, 'submit')
+  if (!rateCheck.allowed) return rateLimitResponse(rateCheck.retryAfterSeconds)
+
   let body: Record<string, unknown>
   try {
     body = await request.json()
@@ -110,20 +128,39 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { residentName, residentEmail, residentPhone, address, isPublic, ownerOrTenant, category, description } = body
+  const { residentName, residentEmail, residentPhone, address, isPublic, ownerOrTenant, category, description, captchaToken } = body
 
   const requiresOwnerOrTenant = isPublic === false
   const hasEmail = typeof residentEmail === 'string' && residentEmail.trim().length > 0
   const hasPhone = typeof residentPhone === 'string' && residentPhone.trim().length > 0
 
+  if (isCaptchaRequired()) {
+    const captchaOk = await verifyCaptcha(
+      typeof captchaToken === 'string' ? captchaToken : undefined,
+      getClientIp(request),
+    )
+    if (!captchaOk) {
+      return Response.json({ error: 'CAPTCHA verification failed' }, { status: 400 })
+    }
+  }
+
   if (
     typeof residentName !== 'string' || !residentName.trim() ||
+    exceedsMaxLength(residentName, MAX_LENGTH.residentName) ||
     (!hasEmail && !hasPhone) ||
+    (hasEmail && exceedsMaxLength(residentEmail as string, MAX_LENGTH.residentEmail)) ||
+    (hasPhone && exceedsMaxLength(residentPhone as string, MAX_LENGTH.residentPhone)) ||
     typeof address !== 'string' || !address.trim() ||
+    exceedsMaxLength(address, MAX_LENGTH.address) ||
     typeof isPublic !== 'boolean' ||
     typeof category !== 'string' || !(DEPARTMENTS as ReadonlyArray<string>).includes(category) ||
     typeof description !== 'string' || description.trim().length < 20 ||
-    (requiresOwnerOrTenant && (typeof ownerOrTenant !== 'string' || !ownerOrTenant.trim()))
+    exceedsMaxLength(description, MAX_LENGTH.description) ||
+    (requiresOwnerOrTenant && (
+      typeof ownerOrTenant !== 'string' ||
+      !ownerOrTenant.trim() ||
+      exceedsMaxLength(ownerOrTenant, MAX_LENGTH.ownerOrTenant)
+    ))
   ) {
     return Response.json({ error: 'All fields are required' }, { status: 400 })
   }

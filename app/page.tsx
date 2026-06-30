@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
+import { TurnstileCaptcha } from '@/app/components/TurnstileCaptcha'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -176,6 +177,16 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+
+  const handleCaptchaVerify = useCallback((token: string) => {
+    setCaptchaToken(token)
+  }, [])
+
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken('')
+  }, [])
 
   function update<K extends keyof FormState>(field: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -198,6 +209,11 @@ export default function Home() {
   }
 
   async function submit() {
+    if (turnstileSiteKey && !captchaToken) {
+      setSubmitError('Please complete the CAPTCHA verification before submitting.')
+      return
+    }
+
     setLoading(true)
     setSubmitError(null)
     try {
@@ -213,6 +229,7 @@ export default function Home() {
           ownerOrTenant: form.isPublic ? '' : form.ownerOrTenant,
           category: form.category,
           description: form.description,
+          captchaToken: captchaToken || undefined,
         }),
       })
       const data = await res.json()
@@ -509,6 +526,12 @@ export default function Home() {
               />
               <ReviewRow label="Description" value={form.description} multiline />
             </ReviewSection>
+            {turnstileSiteKey && (
+              <TurnstileCaptcha
+                onVerify={handleCaptchaVerify}
+                onError={handleCaptchaError}
+              />
+            )}
             {submitError && (
               <div
                 role="alert"

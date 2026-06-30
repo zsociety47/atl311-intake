@@ -1,10 +1,14 @@
 import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function GET(
-  _req: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ ticketId: string }> },
 ) {
+  const rateCheck = await checkRateLimit(request, 'track')
+  if (!rateCheck.allowed) return rateLimitResponse(rateCheck.retryAfterSeconds)
+
   const { ticketId } = await params
   const normalized = ticketId.trim().toUpperCase()
 

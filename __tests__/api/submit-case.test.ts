@@ -23,10 +23,22 @@ jest.mock('@/lib/email', () => ({
   sendSubmissionConfirmation: jest.fn().mockResolvedValue(undefined),
 }))
 
+jest.mock('@/lib/captcha', () => ({
+  verifyCaptcha: jest.fn().mockResolvedValue(true),
+  isCaptchaRequired: jest.fn().mockReturnValue(false),
+}))
+
+jest.mock('@/lib/rate-limit', () => ({
+  checkRateLimit: jest.fn().mockResolvedValue({ allowed: true }),
+  getClientIp: jest.fn().mockReturnValue('127.0.0.1'),
+  rateLimitResponse: jest.fn(),
+}))
+
 import { POST } from '@/app/api/submit-case/route'
 import { db } from '@/lib/db'
 import { anthropic } from '@/lib/anthropic'
 import { Prisma } from '@/app/generated/prisma/client'
+import { verifyCaptcha, isCaptchaRequired } from '@/lib/captcha'
 
 // -------------------------------------------------------------------
 // Helpers
@@ -34,6 +46,8 @@ import { Prisma } from '@/app/generated/prisma/client'
 
 const mockTransaction = db.$transaction as jest.Mock
 const mockCreate = anthropic.messages.create as jest.Mock
+const mockVerifyCaptcha = verifyCaptcha as jest.Mock
+const mockIsCaptchaRequired = isCaptchaRequired as jest.Mock
 
 const VALID_BODY = {
   residentName: 'Jane Smith',
@@ -91,6 +105,8 @@ function makeMockTx() {
 
 beforeEach(() => {
   jest.clearAllMocks()
+  mockIsCaptchaRequired.mockReturnValue(false)
+  mockVerifyCaptcha.mockResolvedValue(true)
 })
 
 describe('POST /api/submit-case', () => {
@@ -142,6 +158,27 @@ describe('POST /api/submit-case', () => {
 
     expect(res.status).toBe(400)
     expect(json.error).toBe('All fields are required')
+    expect(mockCreate).not.toHaveBeenCalled()
+  })
+
+  it('description too long — returns 400 and does not call Claude', async () => {
+    const res = await POST(makeRequest({ ...VALID_BODY, description: 'x'.repeat(5001) }))
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('All fields are required')
+    expect(mockCreate).not.toHaveBeenCalled()
+  })
+
+  it('CAPTCHA failure — returns 400 when verification fails', async () => {
+    mockIsCaptchaRequired.mockReturnValue(true)
+    mockVerifyCaptcha.mockResolvedValue(false)
+
+    const res = await POST(makeRequest({ ...VALID_BODY, captchaToken: 'bad-token' }))
+    const json = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(json.error).toBe('CAPTCHA verification failed')
     expect(mockCreate).not.toHaveBeenCalled()
   })
 

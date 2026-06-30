@@ -75,4 +75,16 @@ describe('sendCaseClosedNotification', () => {
 
     expect(mockSend.mock.calls[0][0].html).toContain('CUSTOM REASON')
   })
+
+  it('escapes HTML in operator close description', async () => {
+    await sendCaseClosedNotification('jane@example.com', {
+      ticketId: 'ABC123',
+      category: 'OTHER',
+      description: '<script>alert("xss")</script>',
+    })
+
+    const html = mockSend.mock.calls[0][0].html as string
+    expect(html).toContain('&lt;script&gt;')
+    expect(html).not.toContain('<script>alert')
+  })
 })

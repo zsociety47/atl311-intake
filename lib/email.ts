@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { escapeHtml } from '@/lib/html-escape'
 
 let _resend: Resend | null = null
 function client(): Resend {
@@ -50,7 +51,8 @@ export async function sendSubmissionConfirmation(
   to: string,
   { ticketId, department }: { ticketId: string; department: string },
 ): Promise<void> {
-  const deptLabel = DEPT_LABELS[department] ?? department.replace(/_/g, ' ')
+  const deptLabel = escapeHtml(DEPT_LABELS[department] ?? department.replace(/_/g, ' '))
+  const safeTicketId = escapeHtml(ticketId)
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -67,7 +69,7 @@ export async function sendSubmissionConfirmation(
       </p>
       <div style="background:#F5F5F3;border-radius:8px;padding:20px 24px;text-align:center;margin-bottom:24px;">
         <p style="margin:0 0 6px;font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;">Your Ticket ID</p>
-        <p style="margin:0;font-size:30px;font-weight:700;font-family:monospace;color:#1B3A6B;letter-spacing:0.25em;">${ticketId}</p>
+        <p style="margin:0;font-size:30px;font-weight:700;font-family:monospace;color:#1B3A6B;letter-spacing:0.25em;">${safeTicketId}</p>
       </div>
       <p style="margin:0;font-size:14px;color:#6B7280;line-height:1.6;">
         Keep this ID handy — you can reference it if you call 311 or need to follow up on your request.
@@ -81,7 +83,7 @@ export async function sendSubmissionConfirmation(
   await client().emails.send({
     from: FROM,
     to: [to],
-    subject: `Your ATL311 request has been received — #${ticketId}`,
+    subject: `Your ATL311 request has been received — #${safeTicketId}`,
     html,
   })
 }
@@ -90,7 +92,9 @@ export async function sendCaseClosedNotification(
   to: string,
   { ticketId, category, description }: { ticketId: string; category: string; description: string },
 ): Promise<void> {
-  const categoryLabel = CLOSE_CATEGORY_LABELS[category] ?? category.replace(/_/g, ' ')
+  const categoryLabel = escapeHtml(CLOSE_CATEGORY_LABELS[category] ?? category.replace(/_/g, ' '))
+  const safeDescription = escapeHtml(description)
+  const safeTicketId = escapeHtml(ticketId)
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -101,13 +105,13 @@ export async function sendCaseClosedNotification(
     <div style="background:white;padding:32px 24px;border:1px solid #E5E5E2;border-top:none;">
       <h1 style="margin:0 0 8px;font-size:22px;color:#1B3A6B;">Update on your request</h1>
       <p style="margin:0 0 24px;font-size:15px;color:#5A5A5A;line-height:1.6;">
-        We have an update on your ATL311 service request <strong style="color:#1B1E2B;">#${ticketId}</strong>.
+        We have an update on your ATL311 service request <strong style="color:#1B1E2B;">#${safeTicketId}</strong>.
       </p>
       <div style="border-left:3px solid #E8642F;padding:12px 16px;background:#FFF8F5;border-radius:0 6px 6px 0;margin-bottom:20px;">
         <p style="margin:0 0 4px;font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Status</p>
         <p style="margin:0;font-size:15px;color:#1B1E2B;font-weight:600;">${categoryLabel}</p>
       </div>
-      <p style="margin:0 0 24px;font-size:15px;color:#5A5A5A;line-height:1.6;">${description}</p>
+      <p style="margin:0 0 24px;font-size:15px;color:#5A5A5A;line-height:1.6;">${safeDescription}</p>
       <p style="margin:0 0 24px;font-size:14px;color:#6B7280;line-height:1.6;">
         If your issue is still ongoing or this doesn't resolve your concern, you're welcome to submit a new request.
       </p>
@@ -126,7 +130,7 @@ export async function sendCaseClosedNotification(
   await client().emails.send({
     from: FROM,
     to: [to],
-    subject: `Update on your ATL311 request #${ticketId}`,
+    subject: `Update on your ATL311 request #${safeTicketId}`,
     html,
   })
 }
