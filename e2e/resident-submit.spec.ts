@@ -56,7 +56,7 @@ test.describe('Resident intake form', () => {
 
     await page.goto(`/track?id=${ticketId}`)
     await expect(page.getByText(ticketId!)).toBeVisible()
-    await expect(page.getByText('Routed')).toBeVisible()
+    await expect(page.getByText('Routed').first()).toBeVisible()
     await expect(page.getByText('Routed to')).toBeVisible()
   })
 
