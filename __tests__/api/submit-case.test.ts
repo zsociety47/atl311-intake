@@ -19,6 +19,10 @@ jest.mock('@/lib/anthropic', () => ({
   },
 }))
 
+jest.mock('@/lib/email', () => ({
+  sendSubmissionConfirmation: jest.fn().mockResolvedValue(undefined),
+}))
+
 import { POST } from '@/app/api/submit-case/route'
 import { db } from '@/lib/db'
 import { anthropic } from '@/lib/anthropic'

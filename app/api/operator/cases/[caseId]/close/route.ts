@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { CaseStatus } from '@/app/generated/prisma/enums'
+import { sendCaseClosedNotification } from '@/lib/email'
 
 const CLOSE_CATEGORIES = [
   'UNINTELLIGIBLE',
@@ -57,6 +58,18 @@ export async function POST(
         },
       })
     })
+
+    if (existing.residentEmail) {
+      try {
+        await sendCaseClosedNotification(existing.residentEmail, {
+          ticketId: existing.publicId,
+          category: category as string,
+          description: (description as string).trim(),
+        })
+      } catch (err) {
+        console.error('Case closed notification email failed:', err)
+      }
+    }
 
     return Response.json({ success: true, caseId })
   } catch (err) {

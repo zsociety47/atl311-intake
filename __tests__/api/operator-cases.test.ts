@@ -13,6 +13,10 @@ jest.mock('@/lib/db', () => ({
   },
 }))
 
+jest.mock('@/lib/email', () => ({
+  sendCaseClosedNotification: jest.fn().mockResolvedValue(undefined),
+}))
+
 import { GET } from '@/app/api/operator/cases/route'
 import { POST as approve } from '@/app/api/operator/cases/[caseId]/approve/route'
 import { POST as override } from '@/app/api/operator/cases/[caseId]/override/route'

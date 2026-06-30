@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { anthropic } from '@/lib/anthropic'
 import { CaseStatus, RoutingSource } from '@/app/generated/prisma/enums'
+import { sendSubmissionConfirmation } from '@/lib/email'
 
 const DEPARTMENTS = [
   'PARKS',
@@ -194,6 +195,17 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error('Database error:', err)
     return Response.json({ error: 'Failed to save case' }, { status: 500 })
+  }
+
+  if (hasEmail) {
+    try {
+      await sendSubmissionConfirmation((residentEmail as string).trim(), {
+        ticketId,
+        department: routing.department,
+      })
+    } catch (err) {
+      console.error('Submission confirmation email failed:', err)
+    }
   }
 
   const deptLabel = routing.department.replace(/_/g, ' ')
