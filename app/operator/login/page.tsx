@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function OperatorLoginPage() {
   const router = useRouter()
@@ -109,6 +110,15 @@ export default function OperatorLoginPage() {
           </div>
         </div>
       </main>
+
+      <div className="px-4 pb-4 text-center">
+        <p className="text-xs text-[#9A9A9A]">
+          Not an operator?{' '}
+          <Link href="/" className="underline hover:text-[#1B3A6B] transition-colors">
+            Submit a resident request
+          </Link>
+        </p>
+      </div>
 
       <footer className="py-8 px-4 text-center">
         <p className="text-xs text-[#9A9A9A]">

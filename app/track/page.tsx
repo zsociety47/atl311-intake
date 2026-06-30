@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { db } from '@/lib/db'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -268,6 +269,11 @@ function NotFound({ ticketId }: { ticketId: string }) {
             >
               Try again
             </a>
+            <p className="mt-4 text-xs text-[#9A9A9A]">
+              <Link href="/" className="text-[#E8642F] font-medium hover:underline transition-colors">
+                Submit a new request →
+              </Link>
+            </p>
           </div>
         </div>
       </main>
@@ -498,10 +504,13 @@ function CaseDetail({ c }: { c: CaseData }) {
           </div>
 
           {/* Back link */}
-          <p className="text-center text-xs text-[#9A9A9A] pb-2">
+          <p className="text-center text-xs text-[#9A9A9A] pb-2 space-x-4">
             <a href="/track" className="hover:underline hover:text-[#1B3A6B] transition-colors">
               ← Look up a different ticket
             </a>
+            <Link href="/" className="text-[#E8642F] font-medium hover:underline transition-colors">
+              Submit a new request →
+            </Link>
           </p>
         </div>
       </main>
