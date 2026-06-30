@@ -11,4 +11,6 @@
 export type * from './models/Case'
 export type * from './models/Routing'
 export type * from './models/StatusHistory'
+export type * from './models/Operator'
+export type * from './models/AuditLog'
 export type * from './commonInputTypes'

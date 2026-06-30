@@ -38,6 +38,7 @@ model Case {
   updatedAt            DateTime        @updatedAt
   routings             Routing[]
   statusHistory        StatusHistory[]
+  auditLogs            AuditLog[]
 
   @@map("cases")
   @@index([status])
@@ -72,5 +73,35 @@ model StatusHistory {
   @@map("status_history")
   @@index([caseId])
   @@index([toStatus])
+  @@index([createdAt])
+}
+
+model Operator {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String
+  role      String     @default("OPERATOR")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  auditLogs AuditLog[]
+
+  @@map("operators")
+  @@index([email])
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  operatorId String?
+  caseId     String?
+  action     String
+  context    Json
+  createdAt  DateTime  @default(now())
+  operator   Operator? @relation(fields: [operatorId], references: [id])
+  case       Case?     @relation(fields: [caseId], references: [id])
+
+  @@map("audit_logs")
+  @@index([operatorId])
+  @@index([caseId])
+  @@index([action])
   @@index([createdAt])
 }

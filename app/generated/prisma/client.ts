@@ -56,3 +56,13 @@ export type Routing = Prisma.RoutingModel
  * 
  */
 export type StatusHistory = Prisma.StatusHistoryModel
+/**
+ * Model Operator
+ * 
+ */
+export type Operator = Prisma.OperatorModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

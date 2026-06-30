@@ -256,6 +256,7 @@ export type CaseWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Case"> | Date | string
   routings?: Prisma.RoutingListRelationFilter
   statusHistory?: Prisma.StatusHistoryListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
 }
 
 export type CaseOrderByWithRelationInput = {
@@ -275,6 +276,7 @@ export type CaseOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   routings?: Prisma.RoutingOrderByRelationAggregateInput
   statusHistory?: Prisma.StatusHistoryOrderByRelationAggregateInput
+  auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
 }
 
 export type CaseWhereUniqueInput = Prisma.AtLeast<{
@@ -297,6 +299,7 @@ export type CaseWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Case"> | Date | string
   routings?: Prisma.RoutingListRelationFilter
   statusHistory?: Prisma.StatusHistoryListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
 }, "id" | "publicId">
 
 export type CaseOrderByWithAggregationInput = {
@@ -356,6 +359,7 @@ export type CaseCreateInput = {
   updatedAt?: Date | string
   routings?: Prisma.RoutingCreateNestedManyWithoutCaseInput
   statusHistory?: Prisma.StatusHistoryCreateNestedManyWithoutCaseInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCaseInput
 }
 
 export type CaseUncheckedCreateInput = {
@@ -375,6 +379,7 @@ export type CaseUncheckedCreateInput = {
   updatedAt?: Date | string
   routings?: Prisma.RoutingUncheckedCreateNestedManyWithoutCaseInput
   statusHistory?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutCaseInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCaseInput
 }
 
 export type CaseUpdateInput = {
@@ -394,6 +399,7 @@ export type CaseUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   routings?: Prisma.RoutingUpdateManyWithoutCaseNestedInput
   statusHistory?: Prisma.StatusHistoryUpdateManyWithoutCaseNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCaseNestedInput
 }
 
 export type CaseUncheckedUpdateInput = {
@@ -413,6 +419,7 @@ export type CaseUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   routings?: Prisma.RoutingUncheckedUpdateManyWithoutCaseNestedInput
   statusHistory?: Prisma.StatusHistoryUncheckedUpdateManyWithoutCaseNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCaseNestedInput
 }
 
 export type CaseCreateManyInput = {
@@ -522,6 +529,11 @@ export type CaseScalarRelationFilter = {
   isNot?: Prisma.CaseWhereInput
 }
 
+export type CaseNullableScalarRelationFilter = {
+  is?: Prisma.CaseWhereInput | null
+  isNot?: Prisma.CaseWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -570,6 +582,22 @@ export type CaseUpdateOneRequiredWithoutStatusHistoryNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CaseUpdateToOneWithWhereWithoutStatusHistoryInput, Prisma.CaseUpdateWithoutStatusHistoryInput>, Prisma.CaseUncheckedUpdateWithoutStatusHistoryInput>
 }
 
+export type CaseCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.CaseCreateWithoutAuditLogsInput, Prisma.CaseUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.CaseCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.CaseWhereUniqueInput
+}
+
+export type CaseUpdateOneWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.CaseCreateWithoutAuditLogsInput, Prisma.CaseUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.CaseCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.CaseUpsertWithoutAuditLogsInput
+  disconnect?: Prisma.CaseWhereInput | boolean
+  delete?: Prisma.CaseWhereInput | boolean
+  connect?: Prisma.CaseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CaseUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.CaseUpdateWithoutAuditLogsInput>, Prisma.CaseUncheckedUpdateWithoutAuditLogsInput>
+}
+
 export type CaseCreateWithoutRoutingsInput = {
   id?: string
   publicId: string
@@ -586,6 +614,7 @@ export type CaseCreateWithoutRoutingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.StatusHistoryCreateNestedManyWithoutCaseInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCaseInput
 }
 
 export type CaseUncheckedCreateWithoutRoutingsInput = {
@@ -604,6 +633,7 @@ export type CaseUncheckedCreateWithoutRoutingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutCaseInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCaseInput
 }
 
 export type CaseCreateOrConnectWithoutRoutingsInput = {
@@ -638,6 +668,7 @@ export type CaseUpdateWithoutRoutingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.StatusHistoryUpdateManyWithoutCaseNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCaseNestedInput
 }
 
 export type CaseUncheckedUpdateWithoutRoutingsInput = {
@@ -656,6 +687,7 @@ export type CaseUncheckedUpdateWithoutRoutingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.StatusHistoryUncheckedUpdateManyWithoutCaseNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCaseNestedInput
 }
 
 export type CaseCreateWithoutStatusHistoryInput = {
@@ -674,6 +706,7 @@ export type CaseCreateWithoutStatusHistoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   routings?: Prisma.RoutingCreateNestedManyWithoutCaseInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutCaseInput
 }
 
 export type CaseUncheckedCreateWithoutStatusHistoryInput = {
@@ -692,6 +725,7 @@ export type CaseUncheckedCreateWithoutStatusHistoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   routings?: Prisma.RoutingUncheckedCreateNestedManyWithoutCaseInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutCaseInput
 }
 
 export type CaseCreateOrConnectWithoutStatusHistoryInput = {
@@ -726,6 +760,7 @@ export type CaseUpdateWithoutStatusHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   routings?: Prisma.RoutingUpdateManyWithoutCaseNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutCaseNestedInput
 }
 
 export type CaseUncheckedUpdateWithoutStatusHistoryInput = {
@@ -744,6 +779,99 @@ export type CaseUncheckedUpdateWithoutStatusHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   routings?: Prisma.RoutingUncheckedUpdateManyWithoutCaseNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutCaseNestedInput
+}
+
+export type CaseCreateWithoutAuditLogsInput = {
+  id?: string
+  publicId: string
+  residentName: string
+  residentEmail?: string | null
+  phone?: string | null
+  address: string
+  isPublic?: boolean
+  ownerOrTenant: string
+  category: string
+  description: string
+  sanitizedDescription: string
+  status?: $Enums.CaseStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  routings?: Prisma.RoutingCreateNestedManyWithoutCaseInput
+  statusHistory?: Prisma.StatusHistoryCreateNestedManyWithoutCaseInput
+}
+
+export type CaseUncheckedCreateWithoutAuditLogsInput = {
+  id?: string
+  publicId: string
+  residentName: string
+  residentEmail?: string | null
+  phone?: string | null
+  address: string
+  isPublic?: boolean
+  ownerOrTenant: string
+  category: string
+  description: string
+  sanitizedDescription: string
+  status?: $Enums.CaseStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  routings?: Prisma.RoutingUncheckedCreateNestedManyWithoutCaseInput
+  statusHistory?: Prisma.StatusHistoryUncheckedCreateNestedManyWithoutCaseInput
+}
+
+export type CaseCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.CaseWhereUniqueInput
+  create: Prisma.XOR<Prisma.CaseCreateWithoutAuditLogsInput, Prisma.CaseUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type CaseUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.CaseUpdateWithoutAuditLogsInput, Prisma.CaseUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.CaseCreateWithoutAuditLogsInput, Prisma.CaseUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.CaseWhereInput
+}
+
+export type CaseUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.CaseWhereInput
+  data: Prisma.XOR<Prisma.CaseUpdateWithoutAuditLogsInput, Prisma.CaseUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type CaseUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.StringFieldUpdateOperationsInput | string
+  residentName?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCaseStatusFieldUpdateOperationsInput | $Enums.CaseStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  routings?: Prisma.RoutingUpdateManyWithoutCaseNestedInput
+  statusHistory?: Prisma.StatusHistoryUpdateManyWithoutCaseNestedInput
+}
+
+export type CaseUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.StringFieldUpdateOperationsInput | string
+  residentName?: Prisma.StringFieldUpdateOperationsInput | string
+  residentEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumCaseStatusFieldUpdateOperationsInput | $Enums.CaseStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  routings?: Prisma.RoutingUncheckedUpdateManyWithoutCaseNestedInput
+  statusHistory?: Prisma.StatusHistoryUncheckedUpdateManyWithoutCaseNestedInput
 }
 
 
@@ -754,11 +882,13 @@ export type CaseUncheckedUpdateWithoutStatusHistoryInput = {
 export type CaseCountOutputType = {
   routings: number
   statusHistory: number
+  auditLogs: number
 }
 
 export type CaseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   routings?: boolean | CaseCountOutputTypeCountRoutingsArgs
   statusHistory?: boolean | CaseCountOutputTypeCountStatusHistoryArgs
+  auditLogs?: boolean | CaseCountOutputTypeCountAuditLogsArgs
 }
 
 /**
@@ -785,6 +915,13 @@ export type CaseCountOutputTypeCountStatusHistoryArgs<ExtArgs extends runtime.Ty
   where?: Prisma.StatusHistoryWhereInput
 }
 
+/**
+ * CaseCountOutputType without action
+ */
+export type CaseCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditLogWhereInput
+}
+
 
 export type CaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -803,6 +940,7 @@ export type CaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   routings?: boolean | Prisma.Case$routingsArgs<ExtArgs>
   statusHistory?: boolean | Prisma.Case$statusHistoryArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Case$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CaseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["case"]>
 
@@ -861,6 +999,7 @@ export type CaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type CaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   routings?: boolean | Prisma.Case$routingsArgs<ExtArgs>
   statusHistory?: boolean | Prisma.Case$statusHistoryArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Case$auditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CaseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CaseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -871,6 +1010,7 @@ export type $CasePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     routings: Prisma.$RoutingPayload<ExtArgs>[]
     statusHistory: Prisma.$StatusHistoryPayload<ExtArgs>[]
+    auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1283,6 +1423,7 @@ export interface Prisma__CaseClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   routings<T extends Prisma.Case$routingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Case$routingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   statusHistory<T extends Prisma.Case$statusHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Case$statusHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.Case$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Case$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1764,6 +1905,30 @@ export type Case$statusHistoryArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.StatusHistoryScalarFieldEnum | Prisma.StatusHistoryScalarFieldEnum[]
+}
+
+/**
+ * Case.auditLogs
+ */
+export type Case$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditLog
+   */
+  select?: Prisma.AuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditLog
+   */
+  omit?: Prisma.AuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditLogInclude<ExtArgs> | null
+  where?: Prisma.AuditLogWhereInput
+  orderBy?: Prisma.AuditLogOrderByWithRelationInput | Prisma.AuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.AuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
 }
 
 /**
