@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { signOut } from 'next-auth/react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -94,12 +95,19 @@ function SiteHeader() {
           <span className="text-white text-[8px] font-bold tracking-widest leading-none">ATL</span>
           <span className="text-white text-sm font-extrabold leading-tight">311</span>
         </div>
-        <div>
+        <div className="flex-1">
           <p className="text-white font-bold text-base leading-snug">ATL311 Operator Dashboard</p>
           <p className="text-white/75 text-xs mt-0.5">
             Review AI routing decisions and take action.
           </p>
         </div>
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: '/operator/login' })}
+          className="ml-auto text-xs font-medium text-white/75 hover:text-white border border-white/25 hover:border-white/60 rounded-md px-3 py-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+        >
+          Sign out
+        </button>
       </div>
     </header>
   )

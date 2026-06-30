@@ -12,6 +12,12 @@ const VALID_DEPARTMENTS = [
   'OTHER',
 ] as const
 
+const OVERRIDABLE_STATUSES = new Set<CaseStatus>([
+  CaseStatus.SUBMITTED,
+  CaseStatus.ROUTED,
+  CaseStatus.IN_REVIEW,
+])
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ caseId: string }> },
@@ -45,6 +51,13 @@ export async function POST(
     return Response.json({ error: 'Case not found' }, { status: 404 })
   }
 
+  if (!OVERRIDABLE_STATUSES.has(existing.status)) {
+    return Response.json(
+      { error: `Cannot override a case with status ${existing.status}` },
+      { status: 422 },
+    )
+  }
+
   try {
     await db.$transaction(async (tx) => {
       await tx.routing.create({
@@ -65,6 +78,18 @@ export async function POST(
           fromStatus: existing.status,
           toStatus: CaseStatus.APPROVED,
           note: `Manual override: routed to ${department}`,
+        },
+      })
+      await tx.auditLog.create({
+        data: {
+          caseId,
+          operatorId: null,
+          action: 'OVERRIDE',
+          context: {
+            previousStatus: existing.status,
+            department,
+            reason: reason.trim(),
+          },
         },
       })
     })

@@ -48,6 +48,10 @@ export async function POST(
     return Response.json({ error: 'Case not found' }, { status: 404 })
   }
 
+  if (existing.status === CaseStatus.CLOSED) {
+    return Response.json({ error: 'Case is already closed' }, { status: 422 })
+  }
+
   try {
     await db.$transaction(async (tx) => {
       await tx.case.update({
@@ -60,6 +64,18 @@ export async function POST(
           fromStatus: existing.status,
           toStatus: CaseStatus.CLOSED,
           note: JSON.stringify({ category, description: description.trim() }),
+        },
+      })
+      await tx.auditLog.create({
+        data: {
+          caseId,
+          operatorId: null,
+          action: 'CLOSE',
+          context: {
+            previousStatus: existing.status,
+            category,
+            description: description.trim(),
+          },
         },
       })
     })

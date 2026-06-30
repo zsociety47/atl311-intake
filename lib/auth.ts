@@ -26,11 +26,15 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        const configuredEmail = process.env.OPERATOR_EMAIL
+        const configuredPassword = process.env.OPERATOR_PASSWORD
         if (
-          credentials?.email === process.env.OPERATOR_EMAIL &&
-          credentials?.password === process.env.OPERATOR_PASSWORD
+          configuredEmail &&
+          configuredPassword &&
+          credentials?.email === configuredEmail &&
+          credentials?.password === configuredPassword
         ) {
-          return { id: '1', name: 'Operator', email: process.env.OPERATOR_EMAIL ?? '', role: 'operator' }
+          return { id: '1', name: 'Operator', email: configuredEmail, role: 'operator' }
         }
         return null
       },

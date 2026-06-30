@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { anthropic } from '@/lib/anthropic'
 import { CaseStatus, RoutingSource } from '@/app/generated/prisma/enums'
+import { Prisma } from '@/app/generated/prisma/client'
 import { sendSubmissionConfirmation } from '@/lib/email'
 
 const DEPARTMENTS = [
@@ -99,6 +100,8 @@ async function routeWithClaude(category: string, sanitizedDescription: string): 
   return decision
 }
 
+const MAX_TICKET_RETRIES = 3
+
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>
   try {
@@ -118,8 +121,8 @@ export async function POST(request: NextRequest) {
     (!hasEmail && !hasPhone) ||
     typeof address !== 'string' || !address.trim() ||
     typeof isPublic !== 'boolean' ||
-    typeof category !== 'string' || !category.trim() ||
-    typeof description !== 'string' || !description.trim() ||
+    typeof category !== 'string' || !(DEPARTMENTS as ReadonlyArray<string>).includes(category) ||
+    typeof description !== 'string' || description.trim().length < 20 ||
     (requiresOwnerOrTenant && (typeof ownerOrTenant !== 'string' || !ownerOrTenant.trim()))
   ) {
     return Response.json({ error: 'All fields are required' }, { status: 400 })
@@ -127,7 +130,7 @@ export async function POST(request: NextRequest) {
 
   const effectiveOwnerOrTenant = requiresOwnerOrTenant
     ? (ownerOrTenant as string)
-    : 'Public Property'
+    : null
   const sanitizedDescription = sanitizeDescription(description)
 
   let routing: RoutingDecision
@@ -138,69 +141,92 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'Routing service unavailable' }, { status: 503 })
   }
 
-  // Pre-generate ID so publicId can be derived before the INSERT
-  const id = crypto.randomUUID()
-  const ticketId = id.replace(/-/g, '').slice(0, 6).toUpperCase()
+  let savedId: string | null = null
+  let savedTicketId: string | null = null
 
-  try {
-    await db.$transaction(async (tx) => {
-      await tx.case.create({
-        data: {
-          id,
-          publicId: ticketId,
-          residentName,
-          residentEmail: hasEmail ? (residentEmail as string).trim() : undefined,
-          phone: hasPhone ? (residentPhone as string).trim() : undefined,
-          address,
-          isPublic,
-          ownerOrTenant: effectiveOwnerOrTenant,
-          category,
-          description,
-          sanitizedDescription,
-          status: CaseStatus.SUBMITTED,
-        },
+  for (let attempt = 0; attempt < MAX_TICKET_RETRIES; attempt++) {
+    const id = crypto.randomUUID()
+    const ticketId = id.replace(/-/g, '').slice(0, 6).toUpperCase()
+
+    try {
+      await db.$transaction(async (tx) => {
+        await tx.case.create({
+          data: {
+            id,
+            publicId: ticketId,
+            residentName,
+            residentEmail: hasEmail ? (residentEmail as string).trim() : null,
+            phone: hasPhone ? (residentPhone as string).trim() : null,
+            address,
+            isPublic,
+            ownerOrTenant: effectiveOwnerOrTenant,
+            category,
+            description,
+            sanitizedDescription,
+            status: CaseStatus.SUBMITTED,
+          },
+        })
+
+        await tx.statusHistory.create({
+          data: {
+            caseId: id,
+            fromStatus: null,
+            toStatus: CaseStatus.SUBMITTED,
+          },
+        })
+
+        await tx.routing.create({
+          data: {
+            caseId: id,
+            department: routing.department,
+            decisionSource: RoutingSource.CLAUDE,
+            confidence: routing.confidence / 100,
+            reasoningSummary: routing.reason,
+          },
+        })
+
+        await tx.case.update({
+          where: { id },
+          data: { status: CaseStatus.ROUTED },
+        })
+
+        await tx.statusHistory.create({
+          data: {
+            caseId: id,
+            fromStatus: CaseStatus.SUBMITTED,
+            toStatus: CaseStatus.ROUTED,
+          },
+        })
       })
 
-      await tx.statusHistory.create({
-        data: {
-          caseId: id,
-          fromStatus: null,
-          toStatus: CaseStatus.SUBMITTED,
-        },
-      })
+      savedId = id
+      savedTicketId = ticketId
+      break
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        console.warn(`ticketId collision on attempt ${attempt + 1}: ${ticketId}`)
+        continue
+      }
+      console.error('Database error:', err)
+      return Response.json({ error: 'Failed to save case' }, { status: 500 })
+    }
+  }
 
-      await tx.routing.create({
-        data: {
-          caseId: id,
-          department: routing.department,
-          decisionSource: RoutingSource.CLAUDE,
-          confidence: routing.confidence / 100,
-          reasoningSummary: routing.reason,
-        },
-      })
-
-      await tx.case.update({
-        where: { id },
-        data: { status: CaseStatus.ROUTED },
-      })
-
-      await tx.statusHistory.create({
-        data: {
-          caseId: id,
-          fromStatus: CaseStatus.SUBMITTED,
-          toStatus: CaseStatus.ROUTED,
-        },
-      })
-    })
-  } catch (err) {
-    console.error('Database error:', err)
-    return Response.json({ error: 'Failed to save case' }, { status: 500 })
+  if (!savedId || !savedTicketId) {
+    console.error(`ticketId collision persisted after ${MAX_TICKET_RETRIES} attempts`)
+    return Response.json(
+      { error: 'Failed to generate a unique ticket ID. Please try again.' },
+      { status: 500 },
+    )
   }
 
   if (hasEmail) {
     try {
       await sendSubmissionConfirmation((residentEmail as string).trim(), {
-        ticketId,
+        ticketId: savedTicketId,
         department: routing.department,
       })
     } catch (err) {
@@ -210,8 +236,8 @@ export async function POST(request: NextRequest) {
 
   const deptLabel = routing.department.replace(/_/g, ' ')
   return Response.json({
-    caseId: id,
-    ticketId,
+    caseId: savedId,
+    ticketId: savedTicketId,
     message: `Your request has been submitted and routed to ${deptLabel}.`,
   })
 }

@@ -209,7 +209,7 @@ export type CaseGroupByOutputType = {
   phone: string | null
   address: string
   isPublic: boolean
-  ownerOrTenant: string
+  ownerOrTenant: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -247,7 +247,7 @@ export type CaseWhereInput = {
   phone?: Prisma.StringNullableFilter<"Case"> | string | null
   address?: Prisma.StringFilter<"Case"> | string
   isPublic?: Prisma.BoolFilter<"Case"> | boolean
-  ownerOrTenant?: Prisma.StringFilter<"Case"> | string
+  ownerOrTenant?: Prisma.StringNullableFilter<"Case"> | string | null
   category?: Prisma.StringFilter<"Case"> | string
   description?: Prisma.StringFilter<"Case"> | string
   sanitizedDescription?: Prisma.StringFilter<"Case"> | string
@@ -267,7 +267,7 @@ export type CaseOrderByWithRelationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
-  ownerOrTenant?: Prisma.SortOrder
+  ownerOrTenant?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sanitizedDescription?: Prisma.SortOrder
@@ -290,7 +290,7 @@ export type CaseWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"Case"> | string | null
   address?: Prisma.StringFilter<"Case"> | string
   isPublic?: Prisma.BoolFilter<"Case"> | boolean
-  ownerOrTenant?: Prisma.StringFilter<"Case"> | string
+  ownerOrTenant?: Prisma.StringNullableFilter<"Case"> | string | null
   category?: Prisma.StringFilter<"Case"> | string
   description?: Prisma.StringFilter<"Case"> | string
   sanitizedDescription?: Prisma.StringFilter<"Case"> | string
@@ -310,7 +310,7 @@ export type CaseOrderByWithAggregationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
-  ownerOrTenant?: Prisma.SortOrder
+  ownerOrTenant?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   sanitizedDescription?: Prisma.SortOrder
@@ -333,7 +333,7 @@ export type CaseScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"Case"> | string | null
   address?: Prisma.StringWithAggregatesFilter<"Case"> | string
   isPublic?: Prisma.BoolWithAggregatesFilter<"Case"> | boolean
-  ownerOrTenant?: Prisma.StringWithAggregatesFilter<"Case"> | string
+  ownerOrTenant?: Prisma.StringNullableWithAggregatesFilter<"Case"> | string | null
   category?: Prisma.StringWithAggregatesFilter<"Case"> | string
   description?: Prisma.StringWithAggregatesFilter<"Case"> | string
   sanitizedDescription?: Prisma.StringWithAggregatesFilter<"Case"> | string
@@ -350,7 +350,7 @@ export type CaseCreateInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -370,7 +370,7 @@ export type CaseUncheckedCreateInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -390,7 +390,7 @@ export type CaseUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -410,7 +410,7 @@ export type CaseUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -430,7 +430,7 @@ export type CaseCreateManyInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -447,7 +447,7 @@ export type CaseUpdateManyMutationInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -464,7 +464,7 @@ export type CaseUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -606,7 +606,7 @@ export type CaseCreateWithoutRoutingsInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -625,7 +625,7 @@ export type CaseUncheckedCreateWithoutRoutingsInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -660,7 +660,7 @@ export type CaseUpdateWithoutRoutingsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -679,7 +679,7 @@ export type CaseUncheckedUpdateWithoutRoutingsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -698,7 +698,7 @@ export type CaseCreateWithoutStatusHistoryInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -717,7 +717,7 @@ export type CaseUncheckedCreateWithoutStatusHistoryInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -752,7 +752,7 @@ export type CaseUpdateWithoutStatusHistoryInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -771,7 +771,7 @@ export type CaseUncheckedUpdateWithoutStatusHistoryInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -790,7 +790,7 @@ export type CaseCreateWithoutAuditLogsInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -809,7 +809,7 @@ export type CaseUncheckedCreateWithoutAuditLogsInput = {
   phone?: string | null
   address: string
   isPublic?: boolean
-  ownerOrTenant: string
+  ownerOrTenant?: string | null
   category: string
   description: string
   sanitizedDescription: string
@@ -844,7 +844,7 @@ export type CaseUpdateWithoutAuditLogsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -863,7 +863,7 @@ export type CaseUncheckedUpdateWithoutAuditLogsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  ownerOrTenant?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerOrTenant?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   sanitizedDescription?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1020,7 +1020,7 @@ export type $CasePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     phone: string | null
     address: string
     isPublic: boolean
-    ownerOrTenant: string
+    ownerOrTenant: string | null
     category: string
     description: string
     sanitizedDescription: string

@@ -17,6 +17,11 @@ jest.mock('@/lib/email', () => ({
   sendCaseClosedNotification: jest.fn().mockResolvedValue(undefined),
 }))
 
+jest.mock('@/lib/auth', () => ({
+  getOperatorSession: jest.fn().mockResolvedValue({ user: { role: 'operator' } }),
+  authOptions: {},
+}))
+
 import { GET } from '@/app/api/operator/cases/route'
 import { POST as approve } from '@/app/api/operator/cases/[caseId]/approve/route'
 import { POST as override } from '@/app/api/operator/cases/[caseId]/override/route'
@@ -83,6 +88,9 @@ function makeMockTx() {
       create: jest.fn().mockResolvedValue({}),
     },
     routing: {
+      create: jest.fn().mockResolvedValue({}),
+    },
+    auditLog: {
       create: jest.fn().mockResolvedValue({}),
     },
   }

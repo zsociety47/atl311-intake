@@ -3,6 +3,12 @@ import { db } from '@/lib/db'
 import { CaseStatus } from '@/app/generated/prisma/enums'
 import { getOperatorSession } from '@/lib/auth'
 
+const APPROVABLE_STATUSES = new Set<CaseStatus>([
+  CaseStatus.SUBMITTED,
+  CaseStatus.ROUTED,
+  CaseStatus.IN_REVIEW,
+])
+
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ caseId: string }> },
@@ -18,6 +24,13 @@ export async function POST(
     return Response.json({ error: 'Case not found' }, { status: 404 })
   }
 
+  if (!APPROVABLE_STATUSES.has(existing.status)) {
+    return Response.json(
+      { error: `Cannot approve a case with status ${existing.status}` },
+      { status: 422 },
+    )
+  }
+
   try {
     await db.$transaction(async (tx) => {
       await tx.case.update({
@@ -29,6 +42,14 @@ export async function POST(
           caseId,
           fromStatus: existing.status,
           toStatus: CaseStatus.APPROVED,
+        },
+      })
+      await tx.auditLog.create({
+        data: {
+          caseId,
+          operatorId: null,
+          action: 'APPROVE',
+          context: { previousStatus: existing.status },
         },
       })
     })

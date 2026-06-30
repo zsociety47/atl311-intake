@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -264,12 +265,12 @@ export default function Home() {
                   {confirmation.ticketId}
                 </p>
               </div>
-              <a
+              <Link
                 href={`/track?id=${confirmation.ticketId}`}
                 className="inline-block mb-3 text-sm font-semibold text-[#E8642F] hover:underline focus:outline-none focus:ring-2 focus:ring-[#E8642F] focus:ring-offset-2 rounded"
               >
                 Track your request status →
-              </a>
+              </Link>
               <p className="text-xs text-[#9A9A9A]">
                 Save this ticket ID to track your request status.
               </p>
@@ -485,7 +486,8 @@ export default function Home() {
           <div className="space-y-4">
             <ReviewSection title="Contact">
               <ReviewRow label="Name" value={form.residentName} />
-              <ReviewRow label="Email" value={form.residentEmail} />
+              {form.residentEmail && <ReviewRow label="Email" value={form.residentEmail} />}
+              {form.residentPhone && <ReviewRow label="Phone" value={form.residentPhone} />}
             </ReviewSection>
             <ReviewSection title="Property">
               <ReviewRow

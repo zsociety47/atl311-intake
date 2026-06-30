@@ -40,7 +40,7 @@ const VALID_BODY = {
   address: '100 Auburn Ave, Atlanta, GA 30303',
   isPublic: true,
   ownerOrTenant: 'tenant',
-  category: 'Roads',
+  category: 'DOT',
   description: 'Large pothole at the intersection causing tire damage.',
 }
 

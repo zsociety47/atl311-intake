@@ -10,9 +10,9 @@ datasource db {
 enum CaseStatus {
   SUBMITTED
   ROUTED
-  IN_REVIEW
+  IN_REVIEW    // Tier 2: set when an operator opens a case for detailed review before deciding
   APPROVED
-  REJECTED
+  REJECTED     // Tier 2: reserved for a formal reject workflow; no route currently transitions here
   CLOSED
 }
 
@@ -29,7 +29,7 @@ model Case {
   phone                String?
   address              String
   isPublic             Boolean         @default(true)
-  ownerOrTenant        String
+  ownerOrTenant        String?
   category             String
   description          String
   sanitizedDescription String
